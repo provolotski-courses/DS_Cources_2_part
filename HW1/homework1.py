@@ -5,7 +5,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
-
+from sklearn.ensemble import RandomForestRegressor
 
 def eda_report(analyzed_dataset):
     """
@@ -27,9 +27,6 @@ def eda_report(analyzed_dataset):
         print(f'гранулярность данных {analyzed_dataset[col].nunique()}')
         print('Частота появления каждого значения:')
         print(analyzed_dataset[col].value_counts())
-
-
-"""Вычисление метрик"""
 
 
 def show_metrics(model_name, y_test, y_pred):
@@ -77,8 +74,7 @@ def show_diagrams(model_name, dataset, y_test, y_pred, model):
     """
     Визуализация результатов на графиках
     """
-    #  Для удобства визуализации доббавим автоинкрементный столбец
-    dataset.insert(0, 'ID', range(0, len(dataset)))
+
     # Формируем фрейм для отображения результатов
     results = pd.DataFrame({
         'ID': dataset.loc[y_test.index, 'ID'].values,
@@ -162,29 +158,41 @@ def main():
     X_train, X_test, Y_train, Y_test = train_test_split(data, target, test_size=0.2, random_state=13)
 
     # Создание и обучение модели Линейной регрессии
-
     model1 = LinearRegression()
     model1_name = 'Линейная регрессия'
     model1.fit(X_train, Y_train)
-
     # Предсказание на тестовой выборке
     y_pred_linear = model1.predict(X_test)
     # показываю метрики
     show_metrics(model1_name, Y_test, y_pred_linear)
 
-    # поскольку вряд ли  население городов это линейная функция то паралельно создаю и обучаю графиентный бустинг
-
-    model2 = GradientBoostingRegressor()
-    model2_name = 'Градиентный бустинг'
+    # Создание и обучение модели SVM регрессии
+    model2 =RandomForestRegressor()
+    model2_name = 'Метод случайного леса'
     model2.fit(X_train, Y_train)
+    # Предсказание на тестовой выборке
+    y_pred_random_forest = model2.predict(X_test)
+    # показываю метрики
+    show_metrics(model2_name, Y_test, y_pred_random_forest)
+
+    # заодно и графиентный бустинг
+
+    model3 = GradientBoostingRegressor()
+    model3_name = 'Градиентный бустинг'
+    model3.fit(X_train, Y_train)
 
     # Предсказание на тестовой выборке
-    y_pred_boost = model2.predict(X_test)
+    y_pred_boost = model3.predict(X_test)
     # показываю метрики
-    show_metrics(model2_name, Y_test, y_pred_boost)
-    # отображаю визуализацию для обеих моделей
+    show_metrics(model3_name, Y_test, y_pred_boost)
+
+    #  Для удобства визуализации доббавим автоинкрементный столбец
+    dataset.insert(0, 'ID', range(0, len(dataset)))
+
+    # отображаю визуализацию для моделей
     show_diagrams(model1_name, dataset, Y_test, y_pred_linear, None)
-    show_diagrams(model2_name, dataset, Y_test, y_pred_boost, model2)
+    show_diagrams(model2_name, dataset, Y_test, y_pred_random_forest, None)
+    show_diagrams(model3_name, dataset, Y_test, y_pred_boost, model3)
 
 
 if __name__ == '__main__':

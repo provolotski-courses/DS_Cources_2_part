@@ -4,13 +4,12 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, LSTM, Dense, Embedding
-from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.layers import Attention
 
 # загружаем данные из файла по-строчно
 with open('data/input_text.txt', 'r', encoding='utf-8') as f:
     texts = f.readlines()
-print(f'text is {texts}')
+
 # Параметры
 sequence_length = 3  # Количество слов в последовательности
 embedding_dim = 50   # Размерность эмбеддингов
